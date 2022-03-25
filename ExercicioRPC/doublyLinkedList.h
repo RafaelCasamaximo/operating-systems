@@ -9,7 +9,7 @@ typedef void* Node;
 Instancia uma nova lista (malloc e retorna o void*)
 POS: pointer da lista
 */
-DoublyLinkedList create();
+DoublyLinkedList createDoublyLinkedList();
 
 /*
 Adiciona um novo Node na lista com Info

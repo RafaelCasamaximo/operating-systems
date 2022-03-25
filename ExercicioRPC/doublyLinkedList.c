@@ -17,7 +17,7 @@ typedef struct{
     int isEmpty;
 }ListaStruct;
 
-DoublyLinkedList create(){
+DoublyLinkedList createDoublyLinkedList(){
     ListaStruct* list = (ListaStruct*)malloc(sizeof(ListaStruct));
     list->primeiro = NULL;
     list->ultimo = NULL;
