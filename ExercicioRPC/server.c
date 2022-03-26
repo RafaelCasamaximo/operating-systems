@@ -3,44 +3,9 @@
 #include "doublyLinkedList.h"
 #include "notebook.h"
 
-void saveList(DoublyLinkedList lista)
-{
-    FILE* notebookFilePtr = fopen("notebook.bin", "wb");
+contact notebook[1000];
+int currentNotebook = 0;
 
-    for(Node aux = getFirst(lista); aux != NULL; aux = getNext(aux))
-    {
-        Info info = getInfo(aux);
-        fwrite(&info, sizeof(contact), 1, notebookFilePtr);
-    }
-    fclose(notebookFilePtr);
-}
-
-void loadList(DoublyLinkedList lista)
-{
-    FILE* notebookFilePtr = fopen("notebook.bin", "rb");
-    if(notebookFilePtr == NULL)
-    {
-        return;
-    }
-    
-    contact newContact;
-
-    /* Attempt to read */
-    // while (fread(&newContact, sizeof(struct contact), 1, notebookFilePtr) == sizeof(struct contact)) {
-    //     insert(lista, newContact);
-    // }
-
-    fclose(notebookFilePtr);
-}
-
-
-/**
- * Implementação das funções definidas no notebook.h criadas pelo rpcgen
- * Funções básicas de CRUD
- * 
- * TODOs:
- * - Criação da lista de pessoas
- */
 
 /*
     Implementação da Interface de comunicação RPC do servidor
@@ -55,13 +20,11 @@ contact *create_1_svc(contact *argp, struct svc_req *rqstp)
     strcpy(result.number, argp->number);
     strcpy(result.address, argp->address);
 
-    DoublyLinkedList lista = createDoublyLinkedList();
-    loadList(lista);
-    /*
-        TODO: Adicionar na lista
-    */
-    saveList(lista);
-    removeList(lista, 0);
+    if(currentNotebook < 500)
+    {
+        notebook[currentNotebook] = result;
+        currentNotebook++;
+    }
     return (&result);
 }
 
@@ -69,15 +32,18 @@ contact *read_1_svc(contact *argp, struct svc_req *rqstp)
 {
     static contact result;
 
-    printf("[INFO] Lendo contato.\n");
+    printf("[INFO] Lendo contato.\n[INFO] Nome: %s\n", argp->name);
 
-    DoublyLinkedList lista = createDoublyLinkedList();
-    loadList(lista);
-    /*
-        TODO: Adicionar na lista
-    */
-    saveList(lista);
-    removeList(lista, 0);
+    for(int i = 0; i < currentNotebook; i++)
+    {
+        if(strcmp(argp->name, notebook[i].name) == 0)
+        {
+            strcpy(result.name, notebook[i].name);
+            strcpy(result.number, notebook[i].number);
+            strcpy(result.address, notebook[i].address);
+        }
+    }
+
     return (&result);
 }
 
@@ -85,15 +51,17 @@ contact *update_1_svc(contact *argp, struct svc_req *rqstp)
 {
     static contact result;
 
-    printf("[INFO] Alterando contato.\n");
+    printf("[INFO] Alterando contato.\n[INFO] Nome: %s\n[INFO] Novo Número: %s\n[INFO] Novo Endereço: %s\n", argp->name, argp->number, argp->address);
 
-    DoublyLinkedList lista = createDoublyLinkedList();
-    loadList(lista);
-    /*
-        TODO: Adicionar na lista
-    */
-    saveList(lista);
-    removeList(lista, 0);
+    for(int i = 0; i < currentNotebook; i++)
+    {
+        if(strcmp(argp->name, notebook[i].name) == 0)
+        {
+            strcpy(notebook[i].number, argp->number);
+            strcpy(notebook[i].address, argp->address);
+        }
+    }
+
     return (&result);
 }
 
@@ -101,15 +69,22 @@ contact *delete_1_svc(contact *argp, struct svc_req *rqstp)
 {
     static contact result;
 
-    printf("[INFO] Removendo contato.\n");
+    printf("[INFO] Removendo Contato.\n[INFO] Nome: %s\n", argp->name);
 
-    DoublyLinkedList lista = createDoublyLinkedList();
-    loadList(lista);
-    /*
-        TODO: Adicionar na lista
-    */
-    saveList(lista);
-    removeList(lista, 0);
+    for(int i = 0; i < currentNotebook; i++)
+    {
+        if(strcmp(argp->name, notebook[i].name) == 0)
+        {
+            char aux[500] = "NA";
+            strcpy(notebook[i].name, aux);
+            strcpy(notebook[i].number, aux);
+            strcpy(notebook[i].address, aux);
+            strcpy(result.name, aux);
+            strcpy(result.number, aux);
+            strcpy(result.address, aux);
+        }
+    }
+
     return (&result);
 }
 

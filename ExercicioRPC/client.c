@@ -26,6 +26,8 @@ contact createContact(CLIENT *clnt, char name[500], char number[500], char addre
      printf ("Problemas ao chamar a função remota\n");
      exit (1);
    }
+
+   return *result;
 }
 
 contact readContact(CLIENT *clnt, char name[500], char number[500], char address[500])
@@ -46,6 +48,8 @@ contact readContact(CLIENT *clnt, char name[500], char number[500], char address
      printf ("Problemas ao chamar a função remota\n");
      exit (1);
    }
+
+    return *result;
 }
 
 contact updateContact(CLIENT *clnt, char name[500], char number[500], char address[500])
@@ -66,6 +70,8 @@ contact updateContact(CLIENT *clnt, char name[500], char number[500], char addre
         printf ("Problemas ao chamar a função remota\n");
         exit (1);
     }
+
+    return *result;
 }
 
 contact deleteContact(CLIENT *clnt, char name[500], char number[500], char address[500])
@@ -86,6 +92,8 @@ contact deleteContact(CLIENT *clnt, char name[500], char number[500], char addre
         printf ("Problemas ao chamar a função remota\n");
         exit (1);
     }
+
+    return *result;
 }
 
 
@@ -120,7 +128,7 @@ int main(int argc, char* argv[])
 
     char choice = 0;
 
-    do{
+    while(1){
 
         printf("\n\n\n[INFO] Agenda de Contatos\n");
         printf("[INFO] 1 - Adicionar Novo Contato;\n");
@@ -129,13 +137,14 @@ int main(int argc, char* argv[])
         printf("[INFO] 4 - Remover Contato Pelo Nome;\n");
         printf("[INFO] 0 - Sair do Programa;\n");
 
+        fflush(stdin);
         choice = getc(stdin);
+        fflush(stdin);
 
         switch (choice)
         {
         case '1':
-    
-            printf("\n\n\n[INFO] Adicionando Novo Contato:\n");
+            printf("\n[INFO] Adicionando Novo Contato:\n");
             printf("[INFO] Nome:\n");
             scanf(" %[^\n]s", name);
             printf("[INFO] Número:\n");
@@ -143,11 +152,14 @@ int main(int argc, char* argv[])
             printf("[INFO] Endereço:\n");
             scanf(" %[^\n]s", address);
             createContact(clnt, name, number, address);
+
+            printf("[INFO] Pressione qualquer tecla para continuar.\n");
+            getchar(); 
+            getchar(); 
             break;
 
         case '2':
-    
-            printf("\n\n\n[INFO] Lendo Informações Sobre Contato Existente:\n");
+            printf("\n[INFO] Lendo Informações Sobre Contato Existente:\n");
             printf("[INFO] Nome do Contato Existente:\n");
             scanf(" %[^\n]s", name);
             
@@ -157,11 +169,16 @@ int main(int argc, char* argv[])
             printf("[INFO] Informações do Contato Buscado:\n");
             printf("[INFO] Número: %s\n", recentContact.number);
             printf("[INFO] Endereço: %s\n", recentContact.address);
+
+            printf("[INFO] Pressione qualquer tecla para continuar.\n");
+            getchar(); 
+            getchar(); 
+            
             
             break;
 
         case '3':
-            printf("\n\n\n[INFO] Alterando Informações Sobre Contato Existente:\n");
+            printf("\n[INFO] Alterando Informações Sobre Contato Existente:\n");
             printf("[INFO] Nome Atual do Contato Existente:\n");
             scanf(" %[^\n]s", name);
             printf("[INFO] Novo Número:\n");
@@ -171,21 +188,31 @@ int main(int argc, char* argv[])
             
             contact alteredContact;
             alteredContact = updateContact(clnt, name, number, address);
+
+            printf("[INFO] Pressione qualquer tecla para continuar.\n");
+            getchar(); 
+            getchar(); 
             break;
 
         case '4':
-            printf("\n\n\n[INFO] Removendo Informações Sobre Contato Existente:\n");
+            printf("\n[INFO] Removendo Informações Sobre Contato Existente:\n");
             printf("[INFO] Nome do Contato Existente:\n");
             scanf(" %[^\n]s", name);
             
             contact deletedContact; 
             deletedContact = deleteContact(clnt, name, name, address);
+
+            printf("[INFO] Pressione qualquer tecla para continuar.\n");
+            getchar(); 
+            getchar(); 
+            break;
+        case '0':
+            exit(1);
             break;
         default:
             break;
         }
-
-    }while(choice != '0');
+    }
    
 
 }
