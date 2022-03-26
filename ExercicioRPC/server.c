@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "doublyLinkedList.h"
 #include "notebook.h"
 
 contact notebook[1000];
