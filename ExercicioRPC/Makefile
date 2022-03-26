@@ -1,5 +1,6 @@
 output: notebook_svc.o notebook_xdr.o server.o doublyLinkedList.o
-	gcc notebook_svc.o notebook_xdr.o server.o doublyLinkedList.o -o server
+	gcc notebook_svc.o notebook_xdr.o server.o doublyLinkedList.o -o server -lnsl
+	gcc client.c notebook_clnt.c notebook_xdr.c -o client -lnsl
 	rm -rf *.o
 
 notebook_svc.o: notebook_svc.c
