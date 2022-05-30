@@ -2,11 +2,12 @@ from socket import *
 import threading
 import time
 import os
+from tracemalloc import start
 from termcolor import colored
 
 class Chat:
 
-    def __init__(self, port, username):
+    def __init__(self, port, username, start, debug):
         self.port     = port
         self.username = username
         host_name     = gethostname()
@@ -15,9 +16,31 @@ class Chat:
         self.host     = None
         self.socket   = socket(AF_INET, SOCK_DGRAM)
         self.socket.bind(("", port))
+        self.start = start
+        self.debug = debug
+        self.timeoutTimer = time.time()
+
+    def __timer_sender(self):
+        while True:
+            time.sleep(15)
+            if self.debug == True:
+                print(colored("[DEBUG] ", "cyan"), "Enviando mensagem para checar integridade da comunicação.")
+            message = 'confirmExistence'
+            for address in self.children:
+                self.socket.sendto(message.encode('ascii'), address)
+        pass
+
+    def __timer_reciever(self):
+        while True:
+            if time.time() - self.timeoutTimer >= 17:
+                print(colored("[ERROR] ", "red"), "Timeout na comunicão. Elemento não está conseguindo se comunicar com pai/ host.")
+                os._exit(1)
+        pass
 
     # Thread receptora de mensagens
     def __receive(self):
+        self.timeoutTimer = time.time()
+
         while True:
             try:
                 data, address = self.socket.recvfrom(1024)
@@ -50,6 +73,18 @@ class Chat:
                     print(colored("[ERROR] ", "red"), "Não foi possível adicionar novo elemento.")
                     self.socket.close()
                     os._exit(1)
+            elif msg == "confirmExistence":
+                if self.debug == True:
+                    print(colored("[DEBUG] ", "cyan"), "Mensagem de integridade recebida do pai.")
+                message = msg
+                for address in self.children:
+                    if self.debug == True:
+                        print(colored("[DEBUG] ", "cyan"), "Encaminhando mensagem de integridade para: ", address)
+                    self.socket.sendto(message.encode('ascii'), address)
+                if self.debug == True:
+                    print(colored("[DEBUG] ", "cyan"), "Encaminhando mensagem de integridade de pai/ host para todos os filhos.")
+                self.timeoutTimer = time.time()
+                pass
             else:
                 aux = msg.split(' ')
                 address = aux[0].split(':')
@@ -84,6 +119,10 @@ class Chat:
         print(colored("[INFO] ", "blue"), 'Iniciando Thread para enviar novas mensagens e elementos.')
         write_thread = threading.Thread(target=self.__write, args=())
         write_thread.start()
+        print(colored("[INFO] ", "blue"), 'Thread iniciada com sucesso.')
+        print(colored("[INFO] ", "blue"), 'Iniciando Thread de integridade de elementos.')
+        timer_thread = threading.Thread(target=self.__timer_sender, args=())
+        timer_thread.start()
         print(colored("[INFO] ", "blue"), 'Thread iniciada com sucesso.')
 
 
@@ -135,4 +174,8 @@ class Chat:
         print(colored("[INFO] ", "blue"), 'Iniciando Thread para enviar novas mensagens e elementos.')
         write_thread = threading.Thread(target=self.__write, args=())
         write_thread.start()
+        print(colored("[INFO] ", "blue"), 'Thread iniciada com sucesso.')
+        print(colored("[INFO] ", "blue"), 'Iniciando Thread de integridade de mensagens e elementos.')
+        timer_thread = threading.Thread(target=self.__timer_reciever, args=())
+        timer_thread.start()
         print(colored("[INFO] ", "blue"), 'Thread iniciada com sucesso.')
