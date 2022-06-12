@@ -5,13 +5,14 @@ from termcolor import colored
 
 @click.command()
 @click.option('--userName', '-u', required=True, help='Nome de usuário no chat.')
+@click.option('--myIp', '-mip', required=True, help='IP de quem está executando.')
 @click.option('--port', '-p', default=55555, help='Porta que será utilizada na execução. [DEFAULT=55555]')
 @click.option('--start', '-s', is_flag=True, help='Flag indicando que a execução iniciará um novo chat.')
 @click.option('--enter', '-e', is_flag=True, help='Flag indicando que a execução entrará em um chat já existente.')
 @click.option('--debug', '-d', is_flag=True, help='Flag indicando que a execução no modo debug.')
 @click.option('--hostIp', '-hip', help='IP do host para a conexão. Para essa opção ser válida o programa deverá possuir a flag --enter/ -e.')
 @click.option('--hostPort', '-hp', help='Porta do host para a conexão. Para essa opção ser válida o programa deverá possuir a flag --enter/ -e.')
-def cli(username, port, start, enter, debug, hostip, hostport):
+def cli(username, myip, port, start, enter, debug, hostip, hostport):
     # ERROR CHECKING
     if start == False and enter == False:
         print(colored("[ERROR] ", "red"), "É necessário ou criar um chat ou entrar em um chat para a execução do programa. Execute com a flag --help para ver as opções.")
@@ -34,7 +35,7 @@ def cli(username, port, start, enter, debug, hostip, hostport):
 
     # INSTANCIANDO CHAT
     print(colored("[INFO] ", "blue"), "Instanciando novo chat...")
-    chat = Chat(int(port), username, start, debug)
+    chat = Chat(myip, int(port), username, start, debug)
     print(colored("[INFO] ", "blue"), "Chat instanciado com sucesso.")
 
     if start == True:
